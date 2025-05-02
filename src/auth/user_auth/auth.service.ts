@@ -2,7 +2,9 @@ import { SignInDto } from "./dto/sign-in.dto";
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from "@nestjs/common";
 
@@ -90,45 +92,42 @@ export class AuthService {
     };
   }
 
-  //sign out
+  // sign out ________________________________________________________
 
-  async signOut(userId: number, res: Response) {
-    const user = await this.usersService.findOne(userId);
-    if (!user) {
-      throw new BadRequestException("Foydalanuvchi topilmadi");
+  async signOut(refreshToken: string, res: Response) {
+    const userData = await this.jwtService.verify(refreshToken, {
+      secret: process.env.REFRESH_TOKEN_KEY,
+    });
+
+    if (!userData) {
+      throw new ForbiddenException("Foydalanuvchi topilmadi");
     }
 
-    user.hashed_refresh_token = null;
-    await user.save();
+    const hashed_refresh_token = null;
+    await this.usersService.updateRefreshToken(
+      userData.id,
+      hashed_refresh_token
+    );
 
     res.clearCookie("refresh_token");
-
-    return {
-      message: "Foydalanuvchi tizimdan chiqdi",
+    const response = {
+      message: "User logged out successfully",
     };
+    return response;
   }
 
-  //refresh token
+  // refresh token ___________________________________________________________________
 
-  async refreshToken(refresh_token: string, res: Response) {
-    if (!refresh_token) {
-      throw new UnauthorizedException("Refresh token topilmadi");
+  async refreshToken(userId: number, refresh_token: string, res: Response) {
+    const decodedToken = await this.jwtService.decode(refresh_token);
+
+    if (userId !== decodedToken["id"]) {
+      throw new ForbiddenException("ruxsat etilmagan");
     }
 
-    let payload: any;
-    try {
-      payload = await this.jwtService.verifyAsync(refresh_token, {
-        secret: process.env.REFRESH_TOKEN_KEY,
-      });
-    } catch (error) {
-      throw new UnauthorizedException("Refresh token notori yoki eskirgan");
-    }
-
-    const user = await this.usersService.findOne(payload.id);
+    const user = await this.usersService.findOne(userId);
     if (!user || !user.hashed_refresh_token) {
-      throw new UnauthorizedException(
-        "Foydalanuvchi topilmadi yoki token mavjud emas"
-      );
+      throw new NotFoundException("user not found");
     }
 
     const isMatch = await bcrypt.compare(
@@ -139,20 +138,19 @@ export class AuthService {
       throw new UnauthorizedException("Refresh token mos emas");
     }
 
-    const { accesToken, refreshToken: newRefreshToken } =
-      await this.generateTokens(user);
+    const { accesToken, refreshToken } = await this.generateTokens(user);
 
-    res.cookie("refresh_token", newRefreshToken, {
+    res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
       maxAge: Number(process.env.COOKIE_TIME_REFRESH),
     });
 
-    user.hashed_refresh_token = await bcrypt.hash(newRefreshToken, 7);
-    await user.save();
-
-    return {
-      message: "Tokenlar yangilandi",
-      accesToken,
+    const response = {
+      message: "user refreshed",
+      userId: user.id,
+      acces_token: accesToken,
     };
+
+    return response;
   }
 }

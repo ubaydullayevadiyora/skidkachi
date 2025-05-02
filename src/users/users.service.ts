@@ -59,50 +59,32 @@ export class UsersService {
 
   async activateUser(link: string) {
     if (!link) {
-      throw new BadRequestException("activation link not found");
+      throw new BadRequestException("Activation is not found");
     }
-
-    const [affectedCount, affectedUsers]: [number, User[]] =
-      await this.userModel.update(
-        { is_active: true },
-        {
-          where: {
-            activation_link: link,
-            is_active: false,
-          },
-          returning: true,
-        }
-      );
-
-    const activatedUser = affectedUsers[0];
-
-    if (!activatedUser) {
-      throw new BadRequestException("User already activated or not found");
+    const updateUser = await this.userModel.update(
+      { is_active: true },
+      {
+        where: {
+          activation_link: link,
+          is_active: false,
+        },
+        returning: true,
+      }
+    );
+    if (!updateUser[1][0]) {
+      throw new BadRequestException("User already activated");
     }
-
     return {
-      message: "User activated successfully",
-      is_active: activatedUser.is_active,
+      message: "User activated succesfully!",
+      is_active: updateUser[1][0].is_active,
     };
+  }
 
-    // const updatedUser = await this.userModel.update(
-    //   { is_active: true },
-    //   {
-    //     where: {
-    //       activation_link: link,
-    //       is_active: false,
-    //     },
-    //     returning: true,
-    //   }
-    // );
-
-    // if (updatedUser[1][0]) {
-    //   throw new BadRequestException("User already activated");
-    // }
-
-    // return {
-    //   message: "User activated successfully",
-    //   is_active: updatedUser[1][0].is_active,
-    // };
+  async updateRefreshToken(id: number, hashed_refresh_token: string | null) {
+    const updateUser = await this.userModel.update(
+      { hashed_refresh_token },
+      { where: { id } }
+    );
+    return updateUser;
   }
 }
