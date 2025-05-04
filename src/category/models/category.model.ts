@@ -1,11 +1,11 @@
 import { Column, DataType, Model, Table } from "sequelize-typescript";
 
-interface IRegionCreationAttr {
+interface ICategoryCreationAttr {
   name: string;
 }
 
-@Table({ tableName: "region" })
-export class Region extends Model<Region, IRegionCreationAttr> {
+@Table({ tableName: "type" })
+export class Category extends Model<Category, ICategoryCreationAttr> {
   @Column({
     type: DataType.INTEGER,
     autoIncrement: true,

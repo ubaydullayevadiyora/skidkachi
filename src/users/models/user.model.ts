@@ -5,7 +5,11 @@ interface IUserCreationAttr {
   phone: string;
   email: string;
   hashed_password: string;
+  hashed_refresh_token: string | null;
+  is_active: boolean;
+  is_owner: boolean;
   location: string;
+  regionId: number;
 }
 
 @Table({ tableName: "users" })
@@ -24,11 +28,13 @@ export class User extends Model<User, IUserCreationAttr> {
 
   @Column({
     type: DataType.STRING(50),
+    validate: { is: /^[0-9]{9}$/ }, // Telefon raqami formati
   })
   declare phone: string;
 
   @Column({
     type: DataType.STRING(50),
+    validate: { isEmail: true }, // Email formati
   })
   declare email: string;
 
@@ -39,6 +45,7 @@ export class User extends Model<User, IUserCreationAttr> {
 
   @Column({
     type: DataType.STRING,
+    allowNull: true, // Agar refresh token bo'lmasa null bo'lishi mumkin
   })
   declare hashed_refresh_token: string | null;
 
@@ -62,4 +69,9 @@ export class User extends Model<User, IUserCreationAttr> {
     defaultValue: DataType.UUIDV4(),
   })
   declare activation_link: string;
+
+  @Column({
+    type: DataType.INTEGER,
+  })
+  declare regionId: number; // Region bilan bog'lash
 }

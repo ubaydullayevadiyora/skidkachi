@@ -17,15 +17,13 @@ export class UsersService {
     private readonly mailService: MailService
   ) {}
   async create(createUserDto: CreateUserDto) {
-    const { password, confirm_password } = createUserDto;
-    if (password !== confirm_password) {
-      throw new BadRequestException("Parollar mos emas");
-    }
-    const hashed_password = await bcrypt.hash(password, 7);
+    const { hashed_password } = createUserDto;
+
+    const hashedPassword = await bcrypt.hash(hashed_password, 7);
 
     const newUser = await this.userModel.create({
       ...createUserDto,
-      hashed_password,
+      hashed_password: hashedPassword, // Corrected field name
     });
 
     try {

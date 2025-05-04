@@ -4,12 +4,16 @@ interface IStoreCreationAttr {
   name: string;
   location: string;
   phone: string;
-  createdAt: Date;
   ownerId: number;
-  storeSocialLinkId: number;
-  since: Date;
-  districtId: number;
+  description: string;
   regionId: number;
+  districtId: number;
+  createdAt: Date;
+  address: string;
+  statusId: number;
+  openTime: Date;
+  closeTime: Date;
+  weekday: Date;
 }
 
 @Table({ tableName: "store" })
@@ -59,7 +63,7 @@ export class Store extends Model<Store, IStoreCreationAttr> {
   @Column({
     type: DataType.INTEGER,
   })
-  declare districId: number;
+  declare districtId: number;
 
   @Column({
     type: DataType.INTEGER,

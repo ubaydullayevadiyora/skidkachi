@@ -1,12 +1,14 @@
 import { Injectable } from "@nestjs/common";
-import { CreateRegionDto } from "./dto/create-district.dto";
-import { UpdateRegionDto } from "./dto/update-district.dto";
-import { InjectModel } from "@nestjs/sequelize";
+import { CreateRegionDto } from "./dto/create-region.dto";
+import { UpdateRegionDto } from "./dto/update-region.dto";
 import { Region } from "./models/region.model";
+import { InjectModel } from "@nestjs/sequelize";
 
 @Injectable()
 export class RegionsService {
-  constructor(@InjectModel(Region) private readonly regionModel: typeof Region) {}
+  constructor(
+    @InjectModel(Region) private readonly regionModel: typeof Region
+  ) {}
   async create(createRegionDto: CreateRegionDto) {
     const newRegion = await this.regionModel.create({ ...createRegionDto });
     return newRegion;
