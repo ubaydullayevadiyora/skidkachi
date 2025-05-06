@@ -8,6 +8,8 @@ import { AuthModule } from "./auth/user_auth/auth.module";
 import { BotModule } from './bot/bot.module';
 import { TelegrafModule } from "nestjs-telegraf";
 import { BOT_NAME } from "./app.constants";
+import { Otp } from "./users/models/otp.model";
+import { Address } from "./bot/model/address.model";
 
 @Module({
   imports: [
@@ -30,7 +32,7 @@ import { BOT_NAME } from "./app.constants";
       username: process.env.PG_USER,
       password: process.env.PG_PASSWORD,
       database: process.env.PG_DB,
-      models: [User],
+      models: [User, Otp, Address],
       autoLoadModels: true,
       sync: { alter: true },
       logging: false,

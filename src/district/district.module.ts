@@ -2,8 +2,8 @@ import { Module } from "@nestjs/common";
 import { DistrictsService } from "./district.service";
 import { DistrictsController } from "./district.controller";
 import { SequelizeModule } from "@nestjs/sequelize";
-import { District } from "./models/district.model";
 import { MailModule } from "../mail/mail.module";
+import { District } from "./models/district.model";
 
 @Module({
   imports: [SequelizeModule.forFeature([District]), MailModule],

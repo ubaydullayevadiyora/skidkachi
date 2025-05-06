@@ -6,10 +6,9 @@ export class CreateStoreDto {
   description: string;
   regionId: number;
   districtId: number;
-  createdAt: Date;
   address: string;
   statusId: number;
   openTime: Date;
   closeTime: Date;
-  weekday: Date;
+  weekday: string;
 }

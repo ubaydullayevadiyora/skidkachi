@@ -28,13 +28,13 @@ export class User extends Model<User, IUserCreationAttr> {
 
   @Column({
     type: DataType.STRING(50),
-    validate: { is: /^[0-9]{9}$/ }, // Telefon raqami formati
+    validate: { is: /^[0-9]{9}$/ }, 
   })
   declare phone: string;
 
   @Column({
     type: DataType.STRING(50),
-    validate: { isEmail: true }, // Email formati
+    validate: { isEmail: true }, 
   })
   declare email: string;
 
@@ -45,7 +45,7 @@ export class User extends Model<User, IUserCreationAttr> {
 
   @Column({
     type: DataType.STRING,
-    allowNull: true, // Agar refresh token bo'lmasa null bo'lishi mumkin
+    allowNull: true,
   })
   declare hashed_refresh_token: string | null;
 
@@ -73,5 +73,5 @@ export class User extends Model<User, IUserCreationAttr> {
   @Column({
     type: DataType.INTEGER,
   })
-  declare regionId: number; // Region bilan bog'lash
+  declare regionId: number; 
 }

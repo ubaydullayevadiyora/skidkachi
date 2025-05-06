@@ -1,4 +1,16 @@
-import { Column, DataType, Model, Table } from "sequelize-typescript";
+import {
+  Table,
+  Column,
+  DataType,
+  Model,
+  ForeignKey,
+  BelongsTo,
+  CreatedAt,
+} from "sequelize-typescript";
+import { User } from "../../users/models/user.model";
+import { Region } from "../../region/models/region.model";
+import { District } from "../../district/models/district.model";
+import { storeSocialLinks } from "../../storeSocialLinks/models/storeSocialLinks.model";
 
 interface IStoreCreationAttr {
   name: string;
@@ -8,65 +20,75 @@ interface IStoreCreationAttr {
   description: string;
   regionId: number;
   districtId: number;
-  createdAt: Date;
   address: string;
   statusId: number;
   openTime: Date;
   closeTime: Date;
-  weekday: Date;
+  weekday: string; 
 }
 
 @Table({ tableName: "store" })
 export class Store extends Model<Store, IStoreCreationAttr> {
   @Column({
-    type: DataType.INTEGER,
+    type: DataType.BIGINT,
     autoIncrement: true,
     primaryKey: true,
   })
   declare id: number;
 
-  @Column({
-    type: DataType.STRING(50),
-  })
+  @Column({ type: DataType.STRING(50), allowNull: false })
   declare name: string;
 
-  @Column({
-    type: DataType.STRING,
-  })
+  @Column({ type: DataType.STRING, allowNull: false })
   declare location: string;
 
-  @Column({
-    type: DataType.STRING(50),
-  })
+  @Column({ type: DataType.STRING(50), allowNull: false })
   declare phone: string;
 
-  @Column({
-    type: DataType.DATE,
-  })
-  declare createdAt: Date;
+  @Column({ type: DataType.TEXT })
+  declare description: string;
 
-  @Column({
-    type: DataType.INTEGER,
-  })
+  @ForeignKey(() => User)
+  @Column({ type: DataType.BIGINT, field: "owner_id" })
   declare ownerId: number;
 
-  @Column({
-    type: DataType.INTEGER,
-  })
-  declare storeSocialLinkId: number;
+  @BelongsTo(() => User, { as: "owner" })
+  declare owner: User;
 
-  @Column({
-    type: DataType.DATE,
-  })
-  declare since: Date;
+  @ForeignKey(() => Region)
+  @Column({ type: DataType.BIGINT, field: "region_id" })
+  declare regionId: number;
 
-  @Column({
-    type: DataType.INTEGER,
-  })
+  @BelongsTo(() => Region)
+  declare region: Region;
+
+  @ForeignKey(() => District)
+  @Column({ type: DataType.BIGINT, field: "district_id" })
   declare districtId: number;
 
-  @Column({
-    type: DataType.INTEGER,
-  })
-  declare regionId: number;
+  @BelongsTo(() => District)
+  declare district: District;
+
+  @Column({ type: DataType.STRING })
+  declare address: string;
+
+  @Column({ type: DataType.TIME, field: "open_time" })
+  declare openTime: Date;
+
+  @Column({ type: DataType.TIME, field: "close_time" })
+  declare closeTime: Date;
+
+  @Column({ type: DataType.STRING })
+  declare weekday: string;
+
+  @ForeignKey(() => storeSocialLinks)
+  @Column({ type: DataType.BIGINT, field: "store_social_link_id" })
+  declare storeSocialLinkId: number;
+
+  @BelongsTo(() => storeSocialLinks)
+  declare storeSocialLink: storeSocialLinks;
+
+  @CreatedAt
+  @Column({ type: DataType.DATE, field: "created_at" })
+  declare createdAt: Date;
 }

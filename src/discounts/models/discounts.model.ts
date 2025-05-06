@@ -1,21 +1,16 @@
-import { Column, DataType, Model, Table } from "sequelize-typescript";
+import {
+  Table,
+  Column,
+  DataType,
+  ForeignKey,
+  BelongsTo,
+  Model,
+} from "sequelize-typescript";
+import { Category } from "../../category/models/category.model";
+import { Type } from "../../type/models/type.model";
 
-interface IDiscountCreationAttr {
-  storeId: number;
-  title: string;
-  description: string;
-  discount_percent: number;
-  start_date: Date;
-  end_date: Date;
-  categoryId: number;
-  discount_value: number;
-  special_link: string;
-  is_active: boolean;
-  type_id: number;
-}
-
-@Table({ tableName: "discount" })
-export class Discount extends Model<Discount, IDiscountCreationAttr> {
+@Table({ tableName: "discounts" })
+export class Discounts extends Model {
   @Column({
     type: DataType.INTEGER,
     autoIncrement: true,
@@ -27,4 +22,18 @@ export class Discount extends Model<Discount, IDiscountCreationAttr> {
     type: DataType.STRING(50),
   })
   declare name: string;
+
+  @ForeignKey(() => Category)
+  @Column(DataType.BIGINT)
+  declare category_id: number;
+
+  @BelongsTo(() => Category)
+  declare category: Category;
+
+  @ForeignKey(() => Type)
+  @Column(DataType.BIGINT)
+  declare type_id: number;
+
+  @BelongsTo(() => Type)
+  declare type: Type;
 }

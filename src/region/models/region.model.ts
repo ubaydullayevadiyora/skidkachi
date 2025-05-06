@@ -1,4 +1,5 @@
-import { Column, DataType, Model, Table } from "sequelize-typescript";
+import { Column, DataType, HasMany, Model, Table } from "sequelize-typescript";
+import { District } from "../../district/models/district.model";
 
 interface IRegionCreationAttr {
   name: string;
@@ -7,14 +8,15 @@ interface IRegionCreationAttr {
 @Table({ tableName: "region" })
 export class Region extends Model<Region, IRegionCreationAttr> {
   @Column({
-    type: DataType.INTEGER,
+    type: DataType.BIGINT,
     autoIncrement: true,
     primaryKey: true,
   })
   declare id: number;
 
-  @Column({
-    type: DataType.STRING(50),
-  })
+  @Column(DataType.STRING)
   declare name: string;
+
+  @HasMany(() => District)
+  declare districts: District[];
 }

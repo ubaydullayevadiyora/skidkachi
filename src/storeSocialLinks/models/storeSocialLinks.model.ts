@@ -1,4 +1,5 @@
-import { Column, DataType, Model, Table } from "sequelize-typescript";
+import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from "sequelize-typescript";
+import { SocialMediaType } from "../../socialMediaType/models/socialMediaType.model";
 
 interface IStoreSocialLinksCreationAttr {
   url: string;
@@ -38,4 +39,7 @@ export class storeSocialLinks extends Model<
     type: DataType.INTEGER,
   })
   declare socialMediaTypeId: number;
+
+  @BelongsTo(() => SocialMediaType)
+  declare socialMediaType: SocialMediaType;
 }
